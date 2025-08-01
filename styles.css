@@ -386,17 +386,21 @@ body {
 
 /* Statistics */
 .stats-summary {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 20px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 24px;
     margin-bottom: 30px;
 }
 
 .stat-card {
     text-align: center;
-    padding: 20px;
+    padding: 24px 20px;
     border: 1px solid var(--border-primary);
     border-radius: 4px;
+    min-width: 140px;
+    max-width: 160px;
+    flex: 0 0 auto;
 }
 
 .stat-card h3 {
@@ -530,60 +534,185 @@ body {
     justify-content: center;
 }
 
-/* Responsive Design */
+/* Mobile Improvements */
 @media (max-width: 768px) {
     .container {
-        padding: 20px 16px;
+        padding: 16px 12px;
     }
     
     .header {
         flex-direction: column;
-        gap: 20px;
+        gap: 16px;
         text-align: center;
+        padding: 0 0 24px 0;
+        margin-bottom: 24px;
+    }
+    
+    .header h1 {
+        font-size: 1.6rem;
+    }
+    
+    .header-buttons {
+        gap: 12px;
+    }
+    
+    .btn {
+        padding: 10px 16px;
+        font-size: 0.9rem;
+        min-height: 44px; /* Better touch target */
+    }
+    
+    .game-area {
+        max-width: 100%;
+    }
+    
+    .timer-section {
+        margin-bottom: 32px;
     }
     
     .timer {
         font-size: 3rem;
     }
     
+    .problem-section {
+        margin-bottom: 32px;
+    }
+    
     .problem {
-        font-size: 2rem;
-        min-height: 60px;
+        font-size: 2.2rem;
+        min-height: 70px;
+        padding: 0 16px;
     }
     
     .answer-input {
-        width: 150px;
-        font-size: 1.2rem;
+        width: 180px;
+        font-size: 1.4rem;
+        padding: 14px 16px;
     }
     
     .score-section {
-        gap: 20px;
+        gap: 24px;
+        margin-bottom: 32px;
     }
     
     .controls {
         flex-wrap: wrap;
+        gap: 12px;
     }
     
+    .controls .btn {
+        flex: 1;
+        min-width: 120px;
+    }
+    
+    /* Mobile Panel Improvements */
+    .settings-panel .panel-content,
+    .stats-panel .panel-content {
+        padding: 24px 20px;
+        max-width: 95%;
+        margin: 0 auto;
+    }
+    
+    .panel-header {
+        margin: 16px 16px 24px 16px;
+    }
+    
+    .setting-group {
+        margin-bottom: 20px;
+    }
+    
+    .setting-group select {
+        padding: 12px;
+        font-size: 1rem;
+    }
+    
+    .checkbox-group {
+        gap: 12px;
+    }
+    
+    .checkbox-label {
+        padding: 8px 0;
+    }
+    
+    /* Mobile Stats */
     .stats-summary {
-        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
     }
     
-    .panel-content {
-        padding: 30px 20px;
+    .stat-card {
+        min-width: 120px;
+        max-width: 140px;
+        padding: 20px 16px;
+    }
+    
+    .recent-games h3 {
+        font-size: 1rem;
+    }
+    
+    .game-entry {
+        padding: 16px 0;
+    }
+    
+    .stats-actions {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .stats-actions .btn {
+        width: 100%;
+    }
+    
+    /* Mobile Modal */
+    .modal-content {
+        padding: 32px 24px;
+        max-width: 95%;
+    }
+    
+    .modal-actions {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .modal-actions .btn {
+        width: 100%;
     }
 }
 
 @media (max-width: 480px) {
+    .container {
+        padding: 12px 8px;
+    }
+    
     .header h1 {
-        font-size: 1.5rem;
+        font-size: 1.4rem;
+    }
+    
+    .header-buttons {
+        flex-direction: column;
+        width: 100%;
+        gap: 8px;
+    }
+    
+    .header-buttons .btn {
+        width: 100%;
+        max-width: 200px;
+        margin: 0 auto;
     }
     
     .timer {
-        font-size: 2.5rem;
+        font-size: 2.8rem;
     }
     
     .problem {
-        font-size: 1.5rem;
+        font-size: 1.8rem;
+        min-height: 60px;
+        padding: 0 8px;
+    }
+    
+    .answer-input {
+        width: 160px;
+        font-size: 1.3rem;
+        padding: 12px 14px;
     }
     
     .score-section {
@@ -591,13 +720,104 @@ body {
         gap: 16px;
     }
     
+    .score-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        max-width: 200px;
+        margin: 0 auto;
+    }
+    
+    .score-label {
+        margin-bottom: 0;
+    }
+    
+    .controls .btn {
+        min-width: 100px;
+        font-size: 0.85rem;
+    }
+    
+    /* Very Small Mobile Stats */
     .stats-summary {
-        grid-template-columns: 1fr;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .stat-card {
+        width: 100%;
+        max-width: 200px;
     }
     
     .game-entry {
         flex-direction: column;
         align-items: flex-start;
+        gap: 6px;
+    }
+    
+    .game-stats {
+        flex-direction: column;
         gap: 4px;
+        align-items: flex-start;
+    }
+    
+    /* Mobile Panel Adjustments */
+    .settings-panel .panel-content,
+    .stats-panel .panel-content {
+        padding: 20px 16px;
+        border-radius: 0;
+        max-height: 90vh;
+    }
+    
+    .panel-header {
+        margin: 12px 12px 20px 12px;
+    }
+}
+
+/* Touch-friendly improvements for all mobile */
+@media (hover: none) and (pointer: coarse) {
+    .btn {
+        min-height: 44px;
+        padding: 12px 20px;
+    }
+    
+    .answer-input {
+        min-height: 44px;
+    }
+    
+    .setting-group select {
+        min-height: 44px;
+        padding: 12px;
+    }
+    
+    .checkbox-label input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+/* Landscape mobile adjustments */
+@media (max-width: 768px) and (orientation: landscape) {
+    .timer {
+        font-size: 2.5rem;
+    }
+    
+    .problem {
+        font-size: 1.8rem;
+        min-height: 50px;
+    }
+    
+    .score-section {
+        flex-direction: row;
+        gap: 20px;
+    }
+    
+    .header {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+    
+    .header-buttons {
+        flex-direction: row;
     }
 } 
