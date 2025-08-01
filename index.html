@@ -101,6 +101,16 @@
                         <label for="negativesAllowed">Allow Negative Results</label>
                         <input type="checkbox" id="negativesAllowed">
                     </div>
+
+                    <div class="setting-group">
+                        <label for="autoSubmitDelay">Auto-Submit Delay</label>
+                        <select id="autoSubmitDelay">
+                            <option value="0">Disabled (Enter key only)</option>
+                            <option value="500">Fast (0.5 seconds)</option>
+                            <option value="800" selected>Normal (0.8 seconds)</option>
+                            <option value="1200">Slow (1.2 seconds)</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
@@ -138,6 +148,7 @@
                     </div>
 
                     <div class="stats-actions">
+                        <button id="exportStats" class="btn btn-primary">Export to CSV</button>
                         <button id="clearStats" class="btn btn-danger">Clear All Statistics</button>
                     </div>
                 </div>

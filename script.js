@@ -20,11 +20,13 @@ class ZetamacGame {
                 multiplication: true,
                 division: false
             },
-            allowNegatives: false
+            allowNegatives: false,
+            autoSubmitDelay: 800
         };
 
         this.statistics = this.loadStatistics();
         this.timer = null;
+        this.autoSubmitTimer = null;
 
         this.initializeElements();
         this.bindEvents();
@@ -62,6 +64,7 @@ class ZetamacGame {
         this.multiplicationCheck = document.getElementById('multiplication');
         this.divisionCheck = document.getElementById('division');
         this.negativesCheck = document.getElementById('negativesAllowed');
+        this.autoSubmitDelaySelect = document.getElementById('autoSubmitDelay');
 
         // Statistics elements
         this.totalGamesElement = document.getElementById('totalGames');
@@ -86,13 +89,14 @@ class ZetamacGame {
         // Answer input
         this.answerInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && this.gameState.isPlaying && !this.gameState.isPaused) {
+                this.clearAutoSubmitTimer();
                 this.checkAnswer();
             }
         });
 
         this.answerInput.addEventListener('input', () => {
-            if (this.gameState.isPlaying && !this.gameState.isPaused && this.answerInput.value !== '') {
-                this.checkAnswer();
+            if (this.gameState.isPlaying && !this.gameState.isPaused) {
+                this.handleAnswerInput();
             }
         });
 
@@ -110,6 +114,7 @@ class ZetamacGame {
         this.multiplicationCheck.addEventListener('change', () => this.updateSettings());
         this.divisionCheck.addEventListener('change', () => this.updateSettings());
         this.negativesCheck.addEventListener('change', () => this.updateSettings());
+        this.autoSubmitDelaySelect.addEventListener('change', () => this.updateSettings());
 
         // Modal controls
         document.getElementById('playAgain').addEventListener('click', () => {
@@ -119,6 +124,7 @@ class ZetamacGame {
         document.getElementById('closeModal').addEventListener('click', () => this.hideModal());
 
         // Statistics
+        document.getElementById('exportStats').addEventListener('click', () => this.exportStatisticsToCSV());
         document.getElementById('clearStats').addEventListener('click', () => this.clearStatistics());
 
         // Close panels when clicking outside
@@ -144,6 +150,7 @@ class ZetamacGame {
         this.multiplicationCheck.checked = this.settings.operations.multiplication;
         this.divisionCheck.checked = this.settings.operations.division;
         this.negativesCheck.checked = this.settings.allowNegatives;
+        this.autoSubmitDelaySelect.value = this.settings.autoSubmitDelay;
         
         this.gameState.timeRemaining = this.settings.duration;
         this.updateDisplay();
@@ -157,6 +164,7 @@ class ZetamacGame {
         this.settings.operations.multiplication = this.multiplicationCheck.checked;
         this.settings.operations.division = this.divisionCheck.checked;
         this.settings.allowNegatives = this.negativesCheck.checked;
+        this.settings.autoSubmitDelay = parseInt(this.autoSubmitDelaySelect.value);
 
         // Ensure at least one operation is selected
         const hasOperation = Object.values(this.settings.operations).some(op => op);
@@ -279,6 +287,7 @@ class ZetamacGame {
         
         if (this.gameState.isPaused) {
             this.pauseTimer();
+            this.clearAutoSubmitTimer();
             this.answerInput.disabled = true;
             this.pauseBtn.textContent = 'Resume';
             this.problemElement.textContent = 'Game Paused';
@@ -301,6 +310,7 @@ class ZetamacGame {
         this.gameState.currentProblem = null;
 
         this.pauseTimer();
+        this.clearAutoSubmitTimer();
         this.answerInput.disabled = true;
         this.answerInput.value = '';
         this.startBtn.disabled = false;
@@ -317,7 +327,55 @@ class ZetamacGame {
         this.answerInput.value = '';
     }
 
+    handleAnswerInput() {
+        this.clearAutoSubmitTimer();
+        
+        const inputValue = this.answerInput.value.trim();
+        
+        // Don't auto-submit if input is empty
+        if (inputValue === '') return;
+        
+        // Check if the answer looks complete
+        const shouldAutoSubmit = this.shouldAutoSubmitAnswer(inputValue);
+        
+        if (shouldAutoSubmit && this.settings.autoSubmitDelay > 0) {
+            // Auto-submit after the configured delay
+            this.autoSubmitTimer = setTimeout(() => {
+                if (this.gameState.isPlaying && !this.gameState.isPaused) {
+                    this.checkAnswer();
+                }
+            }, this.settings.autoSubmitDelay);
+        }
+    }
+
+    shouldAutoSubmitAnswer(inputValue) {
+        const userAnswer = parseInt(inputValue);
+        if (isNaN(userAnswer)) return false;
+        
+        // Estimate expected answer range based on the current problem
+        const expectedAnswer = this.gameState.currentProblem.answer;
+        const expectedLength = Math.abs(expectedAnswer).toString().length;
+        const inputLength = Math.abs(userAnswer).toString().length;
+        
+        // Auto-submit if:
+        // 1. Input length matches expected length, OR
+        // 2. Input length is >= 3 digits, OR
+        // 3. User has typed more than the expected answer (likely done)
+        return inputLength >= expectedLength || 
+               inputLength >= 3 || 
+               Math.abs(userAnswer) > Math.abs(expectedAnswer) * 10;
+    }
+
+    clearAutoSubmitTimer() {
+        if (this.autoSubmitTimer) {
+            clearTimeout(this.autoSubmitTimer);
+            this.autoSubmitTimer = null;
+        }
+    }
+
     checkAnswer() {
+        this.clearAutoSubmitTimer();
+        
         const userAnswer = parseInt(this.answerInput.value);
         
         if (isNaN(userAnswer)) return;
@@ -366,6 +424,7 @@ class ZetamacGame {
     endGame() {
         this.gameState.isPlaying = false;
         this.pauseTimer();
+        this.clearAutoSubmitTimer();
         this.answerInput.disabled = true;
         this.startBtn.disabled = false;
         this.pauseBtn.disabled = true;
@@ -510,6 +569,50 @@ class ZetamacGame {
                 `;
             })
             .join('');
+    }
+
+    exportStatisticsToCSV() {
+        const avgScore = this.statistics.totalGames > 0 
+            ? Math.round(this.statistics.totalScore / this.statistics.totalGames) 
+            : 0;
+
+        // Create CSV content
+        let csvContent = 'Zetamac Tracker Statistics Export\n';
+        csvContent += `Export Date,${new Date().toISOString()}\n\n`;
+        
+        // Summary statistics
+        csvContent += 'Summary Statistics\n';
+        csvContent += 'Metric,Value\n';
+        csvContent += `Total Games,${this.statistics.totalGames}\n`;
+        csvContent += `Best Score,${this.statistics.bestScore}\n`;
+        csvContent += `Average Score,${avgScore}\n`;
+        csvContent += `Best Accuracy,${this.statistics.bestAccuracy}%\n\n`;
+        
+        // Individual game data
+        csvContent += 'Individual Games\n';
+        csvContent += 'Date,Time,Score,Accuracy,Problems Solved,Duration (seconds)\n';
+        
+        this.statistics.recentGames.forEach(game => {
+            const gameDate = new Date(game.date);
+            const date = gameDate.toLocaleDateString();
+            const time = gameDate.toLocaleTimeString();
+            
+            csvContent += `${date},${time},${game.score},${game.accuracy}%,${game.problemsSolved},${game.duration}\n`;
+        });
+
+        // Create and download the file
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        
+        if (link.download !== undefined) {
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `zetamac_statistics_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
     }
 
     clearStatistics() {

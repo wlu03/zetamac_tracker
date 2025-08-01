@@ -340,6 +340,9 @@ body {
 .stats-actions {
     margin-top: 30px;
     text-align: center;
+    display: flex;
+    gap: 15px;
+    justify-content: center;
 }
 
 /* Modal */
