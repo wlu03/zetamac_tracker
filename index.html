@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zetamac Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Zetamac Tracker</h1>
+            <div class="header-buttons">
+                <button id="settingsBtn" class="btn btn-secondary">Settings</button>
+                <button id="statsBtn" class="btn btn-secondary">Statistics</button>
+            </div>
+        </header>
+
+        <main class="main">
+            <!-- Game Area -->
+            <div id="gameArea" class="game-area">
+                <div class="timer-section">
+                    <div class="timer" id="timer">120</div>
+                    <div class="timer-label">seconds remaining</div>
+                </div>
+
+                <div class="problem-section">
+                    <div id="problem" class="problem">Click Start to begin</div>
+                    <input type="number" id="answerInput" class="answer-input" placeholder="Your answer" disabled>
+                </div>
+
+                <div class="score-section">
+                    <div class="score-item">
+                        <span class="score-label">Score:</span>
+                        <span id="currentScore" class="score-value">0</span>
+                    </div>
+                    <div class="score-item">
+                        <span class="score-label">Accuracy:</span>
+                        <span id="accuracy" class="score-value">0%</span>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button id="startBtn" class="btn btn-primary">Start Game</button>
+                    <button id="pauseBtn" class="btn btn-secondary" disabled>Pause</button>
+                    <button id="resetBtn" class="btn btn-secondary">Reset</button>
+                </div>
+            </div>
+
+            <!-- Settings Panel -->
+            <div id="settingsPanel" class="panel settings-panel hidden">
+                <div class="panel-header">
+                    <h2>Game Settings</h2>
+                    <button id="closeSettings" class="btn btn-secondary">Close</button>
+                </div>
+                <div class="panel-content">
+                    <div class="setting-group">
+                        <label for="gameDuration">Game Duration (seconds)</label>
+                        <select id="gameDuration">
+                            <option value="60">60</option>
+                            <option value="120" selected>120</option>
+                            <option value="180">180</option>
+                            <option value="300">300</option>
+                        </select>
+                    </div>
+
+                    <div class="setting-group">
+                        <label>Problem Types</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="addition" checked>
+                                Addition (+)
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="subtraction" checked>
+                                Subtraction (-)
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="multiplication" checked>
+                                Multiplication (×)
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="division">
+                                Division (÷)
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="setting-group">
+                        <label for="difficulty">Difficulty Level</label>
+                        <select id="difficulty">
+                            <option value="easy">Easy (1-10)</option>
+                            <option value="medium" selected>Medium (1-50)</option>
+                            <option value="hard">Hard (1-100)</option>
+                            <option value="expert">Expert (1-999)</option>
+                        </select>
+                    </div>
+
+                    <div class="setting-group">
+                        <label for="negativesAllowed">Allow Negative Results</label>
+                        <input type="checkbox" id="negativesAllowed">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics Panel -->
+            <div id="statsPanel" class="panel stats-panel hidden">
+                <div class="panel-header">
+                    <h2>Your Statistics</h2>
+                    <button id="closeStats" class="btn btn-secondary">Close</button>
+                </div>
+                <div class="panel-content">
+                    <div class="stats-summary">
+                        <div class="stat-card">
+                            <h3>Games Played</h3>
+                            <div id="totalGames" class="stat-value">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Best Score</h3>
+                            <div id="bestScore" class="stat-value">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Average Score</h3>
+                            <div id="avgScore" class="stat-value">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Best Accuracy</h3>
+                            <div id="bestAccuracy" class="stat-value">0%</div>
+                        </div>
+                    </div>
+
+                    <div class="recent-games">
+                        <h3>Recent Games</h3>
+                        <div id="recentGamesList" class="games-list">
+                            <p class="no-games">No games played yet</p>
+                        </div>
+                    </div>
+
+                    <div class="stats-actions">
+                        <button id="clearStats" class="btn btn-danger">Clear All Statistics</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Game Over Modal -->
+        <div id="gameOverModal" class="modal hidden">
+            <div class="modal-content">
+                <h2>Game Over!</h2>
+                <div class="final-stats">
+                    <div class="final-stat">
+                        <span class="label">Final Score:</span>
+                        <span id="finalScore" class="value">0</span>
+                    </div>
+                    <div class="final-stat">
+                        <span class="label">Accuracy:</span>
+                        <span id="finalAccuracy" class="value">0%</span>
+                    </div>
+                    <div class="final-stat">
+                        <span class="label">Problems Solved:</span>
+                        <span id="problemsSolved" class="value">0</span>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button id="playAgain" class="btn btn-primary">Play Again</button>
+                    <button id="closeModal" class="btn btn-secondary">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
