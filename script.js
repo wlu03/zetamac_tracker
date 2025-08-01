@@ -21,7 +21,8 @@ class ZetamacGame {
                 division: false
             },
             allowNegatives: false,
-            autoSubmitDelay: 800
+            autoSubmitDelay: 800,
+            theme: 'monkeytype'
         };
 
         this.statistics = this.loadStatistics();
@@ -65,6 +66,7 @@ class ZetamacGame {
         this.divisionCheck = document.getElementById('division');
         this.negativesCheck = document.getElementById('negativesAllowed');
         this.autoSubmitDelaySelect = document.getElementById('autoSubmitDelay');
+        this.themeSelect = document.getElementById('themeSelect');
 
         // Statistics elements
         this.totalGamesElement = document.getElementById('totalGames');
@@ -115,6 +117,7 @@ class ZetamacGame {
         this.divisionCheck.addEventListener('change', () => this.updateSettings());
         this.negativesCheck.addEventListener('change', () => this.updateSettings());
         this.autoSubmitDelaySelect.addEventListener('change', () => this.updateSettings());
+        this.themeSelect.addEventListener('change', () => this.updateSettings());
 
         // Modal controls
         document.getElementById('playAgain').addEventListener('click', () => {
@@ -140,6 +143,7 @@ class ZetamacGame {
             this.settings = { ...this.settings, ...JSON.parse(savedSettings) };
         }
         this.applySettings();
+        this.applyTheme();
     }
 
     applySettings() {
@@ -151,6 +155,7 @@ class ZetamacGame {
         this.divisionCheck.checked = this.settings.operations.division;
         this.negativesCheck.checked = this.settings.allowNegatives;
         this.autoSubmitDelaySelect.value = this.settings.autoSubmitDelay;
+        this.themeSelect.value = this.settings.theme;
         
         this.gameState.timeRemaining = this.settings.duration;
         this.updateDisplay();
@@ -165,6 +170,7 @@ class ZetamacGame {
         this.settings.operations.division = this.divisionCheck.checked;
         this.settings.allowNegatives = this.negativesCheck.checked;
         this.settings.autoSubmitDelay = parseInt(this.autoSubmitDelaySelect.value);
+        this.settings.theme = this.themeSelect.value;
 
         // Ensure at least one operation is selected
         const hasOperation = Object.values(this.settings.operations).some(op => op);
@@ -174,6 +180,7 @@ class ZetamacGame {
         }
 
         localStorage.setItem('zetamac-settings', JSON.stringify(this.settings));
+        this.applyTheme();
         
         if (!this.gameState.isPlaying) {
             this.gameState.timeRemaining = this.settings.duration;
@@ -493,9 +500,9 @@ class ZetamacGame {
 
         // Update timer color based on remaining time
         if (this.gameState.timeRemaining <= 10 && this.gameState.isPlaying) {
-            this.timerElement.style.color = '#ff6b6b';
+            this.timerElement.style.color = 'var(--error-color)';
         } else {
-            this.timerElement.style.color = '#e2b714';
+            this.timerElement.style.color = 'var(--accent-primary)';
         }
     }
 
@@ -626,6 +633,23 @@ class ZetamacGame {
             };
             localStorage.removeItem('zetamac-statistics');
             this.updateStatistics();
+        }
+    }
+
+    applyTheme() {
+        const themeMap = {
+            'monkeytype': '',
+            'light': 'light',
+            'dark-blue': 'dark-blue',
+            'dracula': 'dracula'
+        };
+        
+        const themeAttribute = themeMap[this.settings.theme] || '';
+        
+        if (themeAttribute) {
+            document.documentElement.setAttribute('data-theme', themeAttribute);
+        } else {
+            document.documentElement.removeAttribute('data-theme');
         }
     }
 }
