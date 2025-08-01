@@ -495,7 +495,7 @@ class ZetamacGame {
         if (this.gameState.timeRemaining <= 10 && this.gameState.isPlaying) {
             this.timerElement.style.color = '#ff6b6b';
         } else {
-            this.timerElement.style.color = '#667eea';
+            this.timerElement.style.color = '#e2b714';
         }
     }
 
